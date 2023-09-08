@@ -1,6 +1,6 @@
 <script lang="ts">
   type Album = {
-    pos: number;
+    id: number;
     path: string;
   };
 
@@ -18,69 +18,67 @@
     { name: "D", color: "Blue", albums: [] },
   ];
 
-  const tierAlbums: Album[][] = [[], [], [], [], []];
-
   let selAlbum: Album | undefined;
 
   const albums: Album[] = [
     {
-      pos: 0,
+      id: 0,
       path: "./src/lib/images/amnesiac.png",
     },
     {
-      pos: 1,
+      id: 1,
       path: "./src/lib/images/angles.jpg",
     },
     {
-      pos: 2,
+      id: 2,
       path: "./src/lib/images/bends.png",
     },
     {
-      pos: 3,
+      id: 3,
       path: "./src/lib/images/comedownmachine.jpg",
     },
     {
-      pos: 4,
+      id: 4,
       path: "./src/lib/images/firstimpressionsofearth.jpg",
     },
     {
-      pos: 5,
+      id: 5,
       path: "./src/lib/images/hailtothethief.png",
     },
     {
-      pos: 6,
+      id: 6,
       path: "./src/lib/images/inrainbows.png",
     },
     {
-      pos: 7,
+      id: 7,
       path: "./src/lib/images/isthisit.png",
     },
     {
-      pos: 8,
+      id: 8,
       path: "./src/lib/images/kida.png",
     },
     {
-      pos: 9,
+      id: 9,
       path: "./src/lib/images/kingoflimbs.png",
     },
     {
-      pos: 10,
+      id: 10,
       path: "./src/lib/images/moonshapedpool.png",
     },
     {
-      pos: 11,
+      id: 11,
       path: "./src/lib/images/newabnormal.jpg",
     },
     {
-      pos: 12,
+      id: 12,
       path: "./src/lib/images/okcomputer.png",
     },
     {
-      pos: 13,
+      id: 13,
       path: "./src/lib/images/pablohoney.png",
     },
     {
-      pos: 14,
+      id: 14,
       path: "./src/lib/images/roomonfire.png",
     },
   ];
@@ -94,21 +92,21 @@
       switch (e.key) {
         case "k":
           if (selTier > 0) {
-            tierAlbums[selTier] = [
-              ...tierAlbums[selTier].slice(0, tierAlbums[selTier--].length - 1),
+            tiers[selTier].albums = [
+              ...tiers[selTier].albums.slice(0, tiers[selTier--].albums.length - 1),
             ];
             if (selAlbum) {
-              tierAlbums[selTier] = [...tierAlbums[selTier], selAlbum];
+              tiers[selTier].albums = [...tiers[selTier].albums, selAlbum];
             }
           }
           break;
         case "j":
           if (selTier < 4) {
-            tierAlbums[selTier] = [
-              ...tierAlbums[selTier].slice(0, tierAlbums[selTier++].length - 1),
+            tiers[selTier].albums = [
+              ...tiers[selTier].albums.slice(0, tiers[selTier++].albums.length - 1),
             ];
             if (selAlbum) {
-              tierAlbums[selTier] = [...tierAlbums[selTier], selAlbum];
+              tiers[selTier].albums = [...tiers[selTier].albums, selAlbum];
             }
           }
           break;
@@ -133,10 +131,10 @@
           selAlbum = albums[selIndex];
           if (selAlbum) {
             albums.splice(albums.indexOf(selAlbum), 1);
-            tierAlbums[0] = [...tierAlbums[0], selAlbum];
+            tiers[0].albums = [...tiers[0].albums, selAlbum];
           }
 
-          selIndex = 50;
+          selIndex = -1;
           break;
         case "h":
           if (selIndex > 0) {
@@ -144,11 +142,11 @@
           }
           break;
         case "j":
-          if (selIndex + 7 <= albums.length - 1) selIndex += 7;
+          if (selIndex + 8 <= albums.length - 1) selIndex += 8;
           break;
         case "k":
-          if (selIndex - 7 >= 0) {
-            selIndex -= 7;
+          if (selIndex - 8 >= 0) {
+            selIndex -= 8;
           }
           break;
         case "l":
@@ -170,7 +168,7 @@
 
 <div class="page">
   <div class="container">
-    <div class="title">Radiohead and Strokes Album Tier List</div>
+    <div class="title">Album Tier List</div>
     <div class="tiers">
       {#each tiers as tier, index (tier.name)}
         <div class="row">
@@ -178,7 +176,7 @@
             <span class="tiername">{tier.name}</span>
           </div>
           <div class="tierAlbums">
-            {#each tierAlbums[index] as album (album.path)}
+            {#each tiers[index].albums as album (album.id)}
               <img src={album.path} alt="" class="tierAlbum" />
             {/each}
           </div>
@@ -187,12 +185,13 @@
     </div>
   </div>
   <div class="albums {selState === 0 ? 'pickAlbum' : ''}">
-    {#each albums as album (album.path)}
+    {#each albums as album (album.id)}
       <img
         src={album.path}
         alt=""
         class="albumsImg {match(album, selIndex) ? 'selAlbum' : ''}"
       />
+    <!-- have to pass selIndex into the match function as that is the value that changes, otherwise the DOM rerender won't be triggered-->
     {/each}
   </div>
 </div>
@@ -232,7 +231,7 @@
     display: grid;
     grid-template-columns: 10% 90%;
     background-color: rgb(41, 40, 40);
-
+    padding: 0.1% 0;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
   }
@@ -254,6 +253,12 @@
     flex-direction: row;
     align-items: center;
     height: 100%;
+    background-color: rgb(41, 40, 40);
+    overflow-x: auto;
+  }
+
+  .tierAlbums::-webkit-scrollbar {
+      display: none;
   }
 
   .tierAlbum {
@@ -265,8 +270,8 @@
   .albums {
     margin: 2.5% 0;
     display: grid;
-    grid-template-columns: repeat(7, 14.6%);
-    width: 68%;
+    grid-template-columns: repeat(8, 12.69%);
+    width: 60%;
     padding: 1%;
     background-color: rgb(41, 40, 40);
   }
@@ -287,21 +292,26 @@
 
   .Red {
     background-color: rgb(245, 80, 80);
+    border: 5px solid rgb(245, 80, 80);
   }
 
   .Orange {
     background-color: rgb(255, 154, 71);
+    border: 5px solid rgb(255, 154, 71);
   }
 
   .Yellow {
     background-color: rgb(236, 236, 85);
+    border: 5px solid rgb(236, 236, 85);
   }
 
   .Green {
     background-color: greenyellow;
+    border: 5px solid greenyellow;
   }
 
   .Blue {
     background-color: cyan;
+    border: 5px solid cyan;
   }
 </style>
