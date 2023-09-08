@@ -1,22 +1,11 @@
-# create-svelte
+# Tier List Desktop Website
+A simple Tier List making desktop website. 
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Use vim bindings (h,j,k,l) to navigate, then enter to select an item. Again, use vim bindings (j,k) to move the items up and down the tiers, and then enter to lock the tier and move to the next item. 
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've cloned and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
 npm run dev
